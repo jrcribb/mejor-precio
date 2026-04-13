@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tests - Mejor Precio</title>
+    <style>
+      body { font-family: Consolas, monospace; margin: 2rem; background: #111; color: #e8f7ee; }
+      .ok { color: #92f7ba; }
+      .ko { color: #ff9696; }
+    </style>
+  </head>
+  <body>
+    <h1>Pruebas de dominio</h1>
+    <pre id="out"></pre>
+    <script type="module">
+      import { runDomainTests } from "./domain.test.js";
+
+      const out = document.querySelector("#out");
+      try {
+        const text = runDomainTests();
+        out.className = "ok";
+        out.textContent = "OK: " + text;
+      } catch (error) {
+        out.className = "ko";
+        out.textContent = "ERROR: " + error.message;
+      }
+    </script>
+  </body>
+</html>

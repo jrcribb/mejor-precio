@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mejor Precio</title>
+    <style>
+      :root {
+        --app-font-size: 16px;
+        --bg: #f7f5f0;
+        --card: #fffdf7;
+        --ink: #1f2328;
+        --line: #ded8cd;
+        --accent: #1f6f8b;
+        --accent-soft: #dceff5;
+        --ok: #1d8d4f;
+        --err: #b63a3a;
+        --shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+      }
+
+      :root[data-theme="dark"] {
+        --bg: #161b22;
+        --card: #1f2732;
+        --ink: #f2f5f7;
+        --line: #324151;
+        --accent: #4bb5d7;
+        --accent-soft: #183140;
+        --ok: #3ad57f;
+        --err: #ff7f7f;
+        --shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        font-size: var(--app-font-size);
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 15% 0%, rgba(255, 205, 130, 0.28) 0, transparent 40%),
+          radial-gradient(circle at 90% 10%, rgba(90, 190, 230, 0.2) 0, transparent 35%),
+          var(--bg);
+      }
+
+      .app-shell {
+        width: min(760px, 100%);
+        margin: 0 auto;
+        padding: 1rem 0.8rem 2rem;
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      .hero h1 {
+        margin: 0;
+        font-size: clamp(1.5rem, 5vw, 2.2rem);
+      }
+
+      .hero p {
+        margin: 0.25rem 0 0;
+        opacity: 0.88;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 0.9rem;
+        box-shadow: var(--shadow);
+      }
+
+      .tools {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.6rem;
+      }
+
+      .tool-group {
+        display: flex;
+        gap: 0.45rem;
+      }
+
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.8rem;
+      }
+
+      .section-head-stack {
+        margin-bottom: 0.65rem;
+      }
+
+      #comparison-form {
+        display: grid;
+        gap: 0.45rem;
+      }
+
+      .grid-header,
+      .grid-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1.2fr;
+        gap: 0.4rem;
+      }
+
+      .grid-header {
+        font-size: 0.8rem;
+        opacity: 0.8;
+        padding: 0 0.2rem;
+      }
+
+      .grid-row {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0.42rem;
+        align-items: center;
+      }
+
+      .grid-row.invalid {
+        border-color: var(--err);
+      }
+
+      .grid-row.winner {
+        background: var(--ink);
+        color: var(--card);
+        border-color: var(--ink);
+      }
+
+      .grid-row.winner input,
+      .grid-row.winner select {
+        background: color-mix(in srgb, var(--ink) 86%, #ffffff 14%);
+        color: var(--card);
+        border-color: color-mix(in srgb, var(--card) 35%, var(--ink) 65%);
+      }
+
+      input,
+      select,
+      button {
+        font: inherit;
+      }
+
+      input,
+      select {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0.5rem;
+        background: transparent;
+        color: var(--ink);
+      }
+
+      input:focus,
+      select:focus {
+        outline: 2px solid rgba(74, 181, 215, 0.35);
+        border-color: var(--accent);
+      }
+
+      .price-cell {
+        font-size: 0.84rem;
+        min-height: 2.25rem;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        padding: 0.35rem 0.45rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .grid-row.winner .price-cell {
+        border-color: color-mix(in srgb, var(--card) 48%, var(--ink) 52%);
+      }
+
+      .actions {
+        margin-top: 0.7rem;
+      }
+
+      .btn {
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        padding: 0.5rem 0.78rem;
+        cursor: pointer;
+        color: var(--ink);
+      }
+
+      .btn.primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: transparent;
+      }
+
+      .btn.subtle {
+        background: var(--accent-soft);
+        color: var(--ink);
+      }
+
+      .icon-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+      }
+
+      .icon {
+        display: inline-flex;
+        width: 1rem;
+        height: 1rem;
+      }
+
+      .icon svg {
+        width: 100%;
+        height: 100%;
+        fill: currentColor;
+      }
+
+      .result {
+        border-radius: 12px;
+        padding: 0.8rem;
+        border: 1px dashed var(--line);
+        background: color-mix(in srgb, var(--card) 90%, white 10%);
+      }
+
+      .result.empty {
+        opacity: 0.86;
+      }
+
+      .result.success {
+        border-color: color-mix(in srgb, var(--ok) 45%, var(--line) 55%);
+      }
+
+      .result.error {
+        border-color: color-mix(in srgb, var(--err) 35%, var(--line) 65%);
+        color: var(--err);
+      }
+
+      @media (max-width: 600px) {
+        .grid-header {
+          display: none;
+        }
+
+        .grid-row {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .price-cell {
+          grid-column: span 2;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="hero">
+        <h1>Mejor Precio</h1>
+        <p>Compara 3 opciones por precio unitario.</p>
+      </header>
+
+      <section class="card tools" aria-label="Controles">
+        <div class="tool-group" role="group" aria-label="Tema">
+          <button id="toggle-theme" type="button" class="btn subtle icon-btn">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"></path></svg>
+            </span>
+            <span>Modo</span>
+          </button>
+        </div>
+        <div class="tool-group" role="group" aria-label="Tamano de letra">
+          <button id="font-minus" type="button" class="btn subtle icon-btn" aria-label="Reducir letra">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M5 11h14v2H5z"></path></svg>
+            </span>
+          </button>
+          <button id="font-plus" type="button" class="btn subtle icon-btn" aria-label="Aumentar letra">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"></path></svg>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="form-title">
+        <div class="section-head section-head-stack">
+          <h2 id="form-title">Nueva comparacion</h2>
+          <button id="reset-form" type="button" class="btn subtle icon-btn">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M12 6V3L8 7l4 4V8a4 4 0 1 1-4 4H6a6 6 0 1 0 6-6z"></path></svg>
+            </span>
+            <span>Nueva</span>
+          </button>
+        </div>
+        <form id="comparison-form" novalidate>
+          <div class="grid-header" aria-hidden="true">
+            <span>Precio</span>
+            <span>Cantidad</span>
+            <span>Peso</span>
+            <span>Comparativo</span>
+          </div>
+
+          <div class="grid-row" data-row="0">
+            <input type="number" name="price-0" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal" />
+            <input type="number" name="quantity-0" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal" />
+            <select name="unit-0" aria-label="Peso de opcion 1">
+              <option value="g">g</option>
+              <option value="kg">kg</option>
+              <option value="ml">ml</option>
+              <option value="l">l</option>
+              <option value="unidad">unidad</option>
+            </select>
+            <div class="price-cell" data-price-cell="0">-</div>
+          </div>
+
+          <div class="grid-row" data-row="1">
+            <input type="number" name="price-1" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal" />
+            <input type="number" name="quantity-1" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal" />
+            <select name="unit-1" aria-label="Peso de opcion 2">
+              <option value="g">g</option>
+              <option value="kg">kg</option>
+              <option value="ml">ml</option>
+              <option value="l">l</option>
+              <option value="unidad">unidad</option>
+            </select>
+            <div class="price-cell" data-price-cell="1">-</div>
+          </div>
+
+          <div class="grid-row" data-row="2">
+            <input type="number" name="price-2" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal" />
+            <input type="number" name="quantity-2" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal" />
+            <select name="unit-2" aria-label="Peso de opcion 3">
+              <option value="g">g</option>
+              <option value="kg">kg</option>
+              <option value="ml">ml</option>
+              <option value="l">l</option>
+              <option value="unidad">unidad</option>
+            </select>
+            <div class="price-cell" data-price-cell="2">-</div>
+          </div>
+        </form>
+      </section>
+
+      <section class="card" aria-labelledby="result-title">
+        <h2 id="result-title">Resultado</h2>
+        <div id="result" class="result empty">Completa al menos 2 lineas para ver el resultado.</div>
+      </section>
+    </main>
+    <script>
+      (function () {
+        const SETTINGS_KEY = "mejor-precio-settings";
+        const minScale = 0.85;
+        const maxScale = 1.3;
+
+        const form = document.getElementById("comparison-form");
+        const result = document.getElementById("result");
+        const resetButton = document.getElementById("reset-form");
+        const themeButton = document.getElementById("toggle-theme");
+        const fontMinusButton = document.getElementById("font-minus");
+        const fontPlusButton = document.getElementById("font-plus");
+        const rows = Array.from(document.querySelectorAll(".grid-row"));
+        const compareCells = Array.from(document.querySelectorAll(".price-cell"));
+
+        const settings = { theme: "light", fontScale: 1 };
+
+        const MASS_UNITS = { g: 1, kg: 1000 };
+        const VOLUME_UNITS = { ml: 1, l: 1000 };
+
+        function detectCategory(unit) {
+          if (MASS_UNITS[unit]) return "mass";
+          if (VOLUME_UNITS[unit]) return "volume";
+          if (unit === "unidad") return "unit";
+          return null;
+        }
+
+        function formatNumber(value) {
+          return new Intl.NumberFormat("es-ES", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+          }).format(value);
+        }
+
+        function saveSettings() {
+          localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+        }
+
+        function applyThemeIcon() {
+          themeButton.querySelector("span:last-child").textContent = settings.theme === "dark" ? "Claro" : "Oscuro";
+        }
+
+        function applySettings() {
+          document.documentElement.setAttribute("data-theme", settings.theme);
+          document.documentElement.style.setProperty("--app-font-size", (16 * settings.fontScale).toFixed(2) + "px");
+          applyThemeIcon();
+        }
+
+        function loadSettings() {
+          try {
+            const raw = localStorage.getItem(SETTINGS_KEY);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            if (parsed.theme === "light" || parsed.theme === "dark") settings.theme = parsed.theme;
+            if (Number.isFinite(parsed.fontScale)) {
+              settings.fontScale = Math.min(maxScale, Math.max(minScale, parsed.fontScale));
+            }
+          } catch (_error) {
+            // ignora configuracion invalida
+          }
+        }
+
+        function clearVisualState() {
+          rows.forEach(function (row) {
+            row.classList.remove("invalid", "winner");
+          });
+          compareCells.forEach(function (cell) {
+            cell.textContent = "-";
+          });
+        }
+
+        function getBasisSpec(category, unitsInRows) {
+          if (category === "mass") {
+            if (unitsInRows.has("kg")) return { divisor: 1000, label: "kg" };
+            return { divisor: 100, label: "100 g" };
+          }
+
+          if (category === "volume") {
+            if (unitsInRows.has("l")) return { divisor: 1000, label: "l" };
+            return { divisor: 100, label: "100 ml" };
+          }
+
+          return { divisor: 1, label: "unidad" };
+        }
+
+        function toBaseAmount(quantity, unit, category) {
+          if (category === "mass") return quantity * MASS_UNITS[unit];
+          if (category === "volume") return quantity * VOLUME_UNITS[unit];
+          return quantity;
+        }
+
+        function readInputRows() {
+          clearVisualState();
+          const activeRows = [];
+          const unitsInRows = new Set();
+
+          for (let i = 0; i < rows.length; i += 1) {
+            const priceInput = form.querySelector('[name="price-' + i + '"]');
+            const quantityInput = form.querySelector('[name="quantity-' + i + '"]');
+            const unitInput = form.querySelector('[name="unit-' + i + '"]');
+
+            const priceRaw = priceInput.value.trim();
+            const quantityRaw = quantityInput.value.trim();
+            const hasAny = priceRaw !== "" || quantityRaw !== "";
+
+            if (!hasAny) {
+              continue;
+            }
+
+            if (priceRaw === "" || quantityRaw === "") {
+              rows[i].classList.add("invalid");
+              return { ok: false, error: "Completa precio y cantidad en todas las lineas activas." };
+            }
+
+            const price = Number(priceRaw);
+            const quantity = Number(quantityRaw);
+            const unit = unitInput.value;
+            const category = detectCategory(unit);
+
+            if (!Number.isFinite(price) || price <= 0 || !Number.isFinite(quantity) || quantity <= 0 || !category) {
+              rows[i].classList.add("invalid");
+              return { ok: false, error: "Todos los valores deben ser positivos y validos." };
+            }
+
+            unitsInRows.add(unit);
+            activeRows.push({ index: i, name: "Opcion " + (i + 1), price, quantity, unit, category });
+          }
+
+          if (activeRows.length < 2) {
+            return { ok: false, error: "Ingresa al menos 2 lineas para comparar." };
+          }
+
+          const uniqueCategories = new Set(activeRows.map(function (row) { return row.category; }));
+          if (uniqueCategories.size > 1) {
+            return { ok: false, error: "No se pueden mezclar peso, volumen y unidad en la misma comparacion." };
+          }
+
+          return {
+            ok: true,
+            category: activeRows[0].category,
+            unitsInRows: unitsInRows,
+            rows: activeRows,
+          };
+        }
+
+        function compare(silent) {
+          const input = readInputRows();
+          if (!input.ok) {
+            if (!silent) {
+              result.className = "result error";
+              result.textContent = input.error;
+            }
+            return;
+          }
+
+          const basis = getBasisSpec(input.category, input.unitsInRows);
+
+          const computed = input.rows.map(function (entry) {
+            const amountInBase = toBaseAmount(entry.quantity, entry.unit, entry.category);
+            const comparative = (entry.price / amountInBase) * basis.divisor;
+            return {
+              index: entry.index,
+              name: entry.name,
+              comparative: comparative,
+            };
+          });
+
+          computed.sort(function (a, b) {
+            return a.comparative - b.comparative;
+          });
+
+          const winner = computed[0];
+
+          computed.forEach(function (rowData) {
+            const cell = compareCells[rowData.index];
+            cell.textContent = "$" + formatNumber(rowData.comparative) + " / " + basis.label;
+          });
+
+          rows[winner.index].classList.add("winner");
+
+          result.className = "result success";
+          result.textContent = "Mejor opcion: " + winner.name + " ($" + formatNumber(winner.comparative) + " / " + basis.label + ")";
+        }
+
+        function rowHasEnoughData(rowIndex) {
+          const priceInput = form.querySelector('[name="price-' + rowIndex + '"]');
+          const quantityInput = form.querySelector('[name="quantity-' + rowIndex + '"]');
+          return priceInput.value.trim() !== "" && quantityInput.value.trim() !== "";
+        }
+
+        function maybeCompareAfterRowExit(rowIndex) {
+          if (rowHasEnoughData(rowIndex)) {
+            compare(true);
+          }
+        }
+
+        function resetForm() {
+          form.reset();
+          clearVisualState();
+          result.className = "result empty";
+          result.textContent = "Completa al menos 2 lineas para ver el resultado.";
+        }
+
+        rows.forEach(function (row, rowIndex) {
+          const unitSelect = row.querySelector('select[name^="unit-"]');
+          unitSelect.addEventListener("blur", function () {
+            maybeCompareAfterRowExit(rowIndex);
+          });
+        });
+
+        resetButton.addEventListener("click", resetForm);
+        themeButton.addEventListener("click", function () {
+          settings.theme = settings.theme === "light" ? "dark" : "light";
+          applySettings();
+          saveSettings();
+        });
+        fontMinusButton.addEventListener("click", function () {
+          settings.fontScale = Math.max(minScale, Number((settings.fontScale - 0.05).toFixed(2)));
+          applySettings();
+          saveSettings();
+        });
+        fontPlusButton.addEventListener("click", function () {
+          settings.fontScale = Math.min(maxScale, Number((settings.fontScale + 0.05).toFixed(2)));
+          applySettings();
+          saveSettings();
+        });
+
+        loadSettings();
+        applySettings();
+      })();
+    </script>
+  </body>
+</html>
