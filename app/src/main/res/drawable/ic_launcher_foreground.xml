@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Letter M -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,40 L44,40 L52,58 L60,40 L74,40 L74,74 L64,74 L64,52 L56,70 L48,70 L40,52 L40,74 L30,74 Z" />
+
+    <!-- Artistic Overlay for P - slightly offset to create a modern 'cut' look -->
+    <path
+        android:fillAlpha="0.8"
+        android:fillColor="#FFFFFF"
+        android:pathData="M58,45 L78,45 C83,45 87,49 87,54 C87,59 83,63 78,63 L68,63 L68,78 L58,78 Z" />
+
+    <!-- Dot to balance the composition -->
+    <path
+        android:fillColor="#4BB5D7"
+        android:pathData="M82,73 A5,5 0,1 1,82.1,73 Z" />
+
+</vector>
