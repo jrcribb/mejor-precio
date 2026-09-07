@@ -1,4 +1,4 @@
-# Mejor Precio (Vanilla SPA)
+# Mejor Precio
 
 SPA sin frameworks y sin Node para comparar hasta 3 presentaciones de un producto.
 
